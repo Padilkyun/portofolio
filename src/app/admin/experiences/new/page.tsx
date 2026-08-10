@@ -19,6 +19,8 @@ export default function NewExperiencePage() {
     isCurrent: false,
     description: "",
     logoUrl: "",
+    photoUrl: "",
+    skillsText: "",
     sortOrder: 0,
   });
 
@@ -32,6 +34,8 @@ export default function NewExperiencePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...form,
+          photoUrl: form.photoUrl || null,
+          skills: form.skillsText.split(",").map((s) => s.trim()).filter(Boolean),
           endDate: form.isCurrent ? null : form.endDate || null,
         }),
       });
@@ -75,6 +79,15 @@ export default function NewExperiencePage() {
             hint="Square logo works best"
           />
         </div>
+        <div className="md:col-span-2">
+          <ImageUpload
+            label="Cover / team photo"
+            value={form.photoUrl}
+            onChange={(url) => setForm({ ...form, photoUrl: url })}
+            aspect="landscape"
+            hint="Workplace or team photo shown on the detail page"
+          />
+        </div>
         <Field label="Start date">
           <input className="input" type="date" required value={form.startDate} onChange={(e) => setForm({ ...form, startDate: e.target.value })} />
         </Field>
@@ -100,6 +113,23 @@ export default function NewExperiencePage() {
         <Field label="Sort order">
           <input className="input" type="number" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} />
         </Field>
+        <div className="md:col-span-2">
+          <Field label="Skills" hint="Comma-separated — e.g. Python, MQTT, ESP32, TensorFlow Lite">
+            <input
+              className="input"
+              placeholder="Skill 1, Skill 2, Skill 3"
+              value={form.skillsText}
+              onChange={(e) => setForm({ ...form, skillsText: e.target.value })}
+            />
+          </Field>
+          {form.skillsText && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {form.skillsText.split(",").map((s) => s.trim()).filter(Boolean).map((s) => (
+                <span key={s} className="badge text-[11px]">{s}</span>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="md:col-span-2 flex items-center gap-3">
           <SubmitButton loading={loading}>Create</SubmitButton>
           {error && <p className="text-sm text-red-600">{error}</p>}

@@ -12,6 +12,8 @@ const schema = z.object({
   isCurrent: z.boolean().optional(),
   description: z.string().optional().nullable(),
   logoUrl: z.string().optional().nullable(),
+  photoUrl: z.string().optional().nullable(),
+  skills: z.array(z.string()).optional(),
   sortOrder: z.number().int().optional(),
 });
 
@@ -33,6 +35,7 @@ export async function POST(request: Request) {
         endDate: body.endDate ? new Date(body.endDate) : null,
         isCurrent: body.isCurrent ?? false,
         sortOrder: body.sortOrder ?? 0,
+        skills: JSON.stringify(body.skills ?? []),
       },
     });
     return NextResponse.json(item, { status: 201 });

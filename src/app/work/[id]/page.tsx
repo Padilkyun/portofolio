@@ -3,10 +3,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft, MapPin, Calendar, Briefcase, Building2,
-  FileText, Link2, AlignLeft,
+  FileText, Link2, AlignLeft, CheckCircle2,
 } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { formatDateRange } from "@/lib/utils";
+import { formatDateRange, parseJsonArray } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -28,6 +28,8 @@ export default async function WorkDetailPage({
   });
   if (!exp) notFound();
 
+  const skills = parseJsonArray<string>(exp.skills);
+
   const dateRange = formatDateRange(exp.startDate, exp.endDate, exp.isCurrent);
   const start = new Date(exp.startDate);
   const end = exp.isCurrent ? new Date() : exp.endDate ? new Date(exp.endDate) : new Date();
@@ -40,6 +42,14 @@ export default async function WorkDetailPage({
 
   return (
     <main className="min-h-screen bg-white">
+      {/* ── Cover photo ── */}
+      {exp.photoUrl && (
+        <div className="relative h-52 w-full overflow-hidden bg-neutral-100 md:h-72">
+          <Image src={exp.photoUrl} alt={`${exp.company} photo`} fill className="object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/60 to-transparent" />
+        </div>
+      )}
+
       {/* ── Hero ── */}
       <div className="border-b border-border bg-white">
         <div className="container-page py-10 md:py-14">
@@ -109,6 +119,21 @@ export default async function WorkDetailPage({
                 )}
               </div>
             </section>
+
+            {/* Skills */}
+            {skills.length > 0 && (
+              <section>
+                <h2 className="mb-4 text-xs font-semibold uppercase tracking-[0.18em] text-muted">Skills Used</h2>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {skills.map((s) => (
+                    <div key={s} className="flex items-center gap-2.5 rounded-xl border border-border bg-surface px-4 py-2.5">
+                      <CheckCircle2 size={14} className="shrink-0 text-neutral-400" />
+                      <span className="text-sm font-medium">{s}</span>
+                    </div>
+                  ))}
+                </div>
+              </section>
+            )}
 
             {/* Timeline bar */}
             <section>
@@ -230,6 +255,19 @@ export default async function WorkDetailPage({
                 </div>
               </dl>
             </div>
+
+            {skills.length > 0 && (
+              <div className="rounded-2xl border border-border bg-white p-5">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.15em] text-muted">
+                  Skills ({skills.length})
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {skills.map((s) => (
+                    <span key={s} className="badge text-[11px]">{s}</span>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {exp.documentations.length > 0 && (
               <div className="rounded-2xl border border-border bg-white p-5">

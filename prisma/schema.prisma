@@ -45,6 +45,8 @@ model Experience {
   isCurrent      Boolean                   @default(false)
   description    String?
   logoUrl        String?
+  photoUrl       String?                   // cover/team photo
+  skills         String                    @default("[]") // JSON array string
   sortOrder      Int                       @default(0)
   createdAt      DateTime                  @default(now())
   updatedAt      DateTime                  @updatedAt

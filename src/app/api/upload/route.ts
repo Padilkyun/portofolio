@@ -38,6 +38,12 @@ export async function POST(request: Request) {
     }
 
     // ── Local filesystem (development only) ──────────────────────────────────
+    if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { error: "Image upload requires Vercel Blob. Set BLOB_READ_WRITE_TOKEN in environment variables, or paste an image URL directly." },
+        { status: 501 }
+      );
+    }
     const { writeFile, mkdir } = await import("fs/promises");
     const { join } = await import("path");
 

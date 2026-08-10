@@ -39,12 +39,16 @@ export function ImageUpload({
       const res = await fetch("/api/upload", { method: "POST", body: fd });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.error ?? "Upload failed");
+        if (res.status === 501) {
+          setError("Upload tidak tersedia. Gunakan paste URL gambar di bawah.");
+        } else {
+          setError(data.error ?? "Upload failed");
+        }
         return;
       }
       onChange(data.url);
     } catch {
-      setError("Upload failed");
+      setError("Upload failed — check your connection");
     } finally {
       setUploading(false);
     }

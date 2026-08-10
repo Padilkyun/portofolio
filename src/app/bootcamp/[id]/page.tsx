@@ -256,14 +256,6 @@ export default async function BootcampDetailPage({
               </div>
             )}
 
-            {/* Admin shortcut */}
-            <Link
-              href={`/admin/bootcamps/${bc.id}`}
-              className="flex items-center justify-between rounded-2xl border border-dashed border-border p-4 text-sm text-muted transition hover:border-neutral-400 hover:text-foreground"
-            >
-              <span>Edit this entry</span>
-              <ExternalLink size={13} />
-            </Link>
           </aside>
         </div>
       </div>

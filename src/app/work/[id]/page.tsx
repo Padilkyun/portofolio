@@ -246,14 +246,6 @@ export default async function WorkDetailPage({
               </dl>
             </div>
 
-            {/* Admin shortcut */}
-            <Link
-              href={`/admin/experiences/${exp.id}`}
-              className="flex items-center justify-between rounded-2xl border border-dashed border-border p-4 text-sm text-muted transition hover:border-neutral-400 hover:text-foreground"
-            >
-              <span>Edit this entry</span>
-              <ExternalLink size={13} />
-            </Link>
           </aside>
         </div>
       </div>

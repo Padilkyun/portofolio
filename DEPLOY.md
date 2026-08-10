@@ -1,96 +1,138 @@
-# Deploy & Run Documentation
+# Deploy ke Vercel
 
-## Prerequisites
-- Node.js ≥ 20
-- npm ≥ 10
-- SQLite (local) or PostgreSQL (production)
-- Vercel account (optional for cloud deploy)
-
-## Local Development
-1. Clone repo & install deps
-   ```bash
-   git clone <repo-url>
-   cd portfolio-aiot
-   npm install
-   ```
-2. Set up environment
-   - Copy `.env.example` → `.env`
-   - Ensure `DATABASE_URL=file:./dev.db` (SQLite default) or point to a local Postgres instance.
-3. Push Prisma schema & seed data
-   ```bash
-   npx prisma db push      # create tables
-   npm run db:seed         # populate admin, profile, experiences, etc.
-   ```
-4. Start dev server
-   ```bash
-   npm run dev
-   ```
-   Open <http://localhost:3000> (site) and <http://localhost:3000/admin/login> (admin).
-   Default admin credentials (from seed):
-   - **email:** admin@portfolio.local
-   - **password:** admin123
-   Change them after first login.
-
-## Production Deploy (Vercel)
-### 1️⃣ Database
-- Recommended: Neon Postgres (free tier) or Vercel Postgres.
-- Create Neon project → copy connection string.
-- Edit `prisma/schema.prisma` datasource provider to `postgresql` (already shown in README).
-- Set env var `DATABASE_URL` to Neon connection string in Vercel Settings → Environment Variables.
-- Run schema migration and seed **once** from your machine:
-  ```bash
-  npx prisma db push                 # apply schema to Neon
-  npm run db:seed                     # insert admin & starter data
-  ```
-  Alternatively, create content via the admin UI after deployment.
-
-### 2️⃣ Vercel Import
-```bash
-git init
-git add .
-git commit -m "Initial AIoT portfolio"
-# create GitHub repo, push
-# Then in Vercel dashboard → New Project → Import Git repository.
-```
-Vercel will detect Next.js 15, install deps, and run the build command from `package.json`:
-```
-prisma generate && next build
-```
-### 3️⃣ Environment Variables (Vercel)
-| Key            | Value                                 |
-|----------------|---------------------------------------|
-| DATABASE_URL   | Neon/Postgres connection string       |
-| JWT_SECRET      | Long random string (e.g., `openssl rand -hex 32`)
-| ADMIN_EMAIL     | Your admin email (optional)          |
-| ADMIN_PASSWORD  | Strong password (used only for reseed)
-```
-### 4️⃣ Post‑Deploy Seeding
-After first deploy, run the seed script locally pointing to the production DB:
-```bash
-export DATABASE_URL=<prod-connection-string>
-npm run db:seed
-```
-or add a one‑off Vercel Build Hook that executes `npm run db:seed`.
-
-## Running Locally in Production Mode
-```bash
-npm run build   # generate Prisma client & build Next.js
-npm start       # runs compiled app on PORT 3000
-```
-Use same `.env` (with production `DATABASE_URL`) for testing.
-
-## Security Notes
-- **Never** use SQLite in Vercel; file system is transient.
-- Rotate `JWT_SECRET` regularly.
-- Change default admin credentials immediately after first launch.
-- Store all secrets in Vercel Environment Variables (not in repo).
-
-## Helpful Commands Summary
-- `npm run db:push` – sync Prisma schema.
-- `npm run db:seed` – insert seed data.
-- `npm run dev` – start development server.
-- `npm run build && npm start` – run production build.
-- `npm run db:studio` – open Prisma Studio UI.
+## Kenapa SQLite tidak bisa di Vercel
+Vercel adalah platform serverless — filesystem-nya tidak persistent. File `.db` akan hilang setiap cold start. Solusinya: pakai **Neon** (PostgreSQL serverless gratis).
 
 ---
-*Documentation generated on 2026‑08‑08.*
+
+## Langkah 1 — Buat database di Neon
+
+1. Buka [console.neon.tech](https://console.neon.tech) → Sign up gratis
+2. Klik **New Project** → beri nama (misal: `portfolio-aiot`)
+3. Pilih region terdekat (Singapore untuk Asia Tenggara)
+4. Setelah project dibuat, buka tab **Connection Details**
+5. Catat dua URL:
+   - **Pooled connection** → untuk `DATABASE_URL` (pakai `pgbouncer=true`)
+   - **Direct connection** → untuk `DIRECT_URL`
+
+Format URL Neon:
+```
+# Pooled (untuk DATABASE_URL):
+postgresql://USER:PASS@ep-xxx-yyy.ap-southeast-1.aws.neon.tech/neondb?sslmode=require&pgbouncer=true&connect_timeout=15
+
+# Direct (untuk DIRECT_URL):
+postgresql://USER:PASS@ep-xxx-yyy.ap-southeast-1.aws.neon.tech/neondb?sslmode=require
+```
+
+---
+
+## Langkah 2 — Set Environment Variables di Vercel
+
+Buka **Vercel Dashboard → Project → Settings → Environment Variables**, tambahkan:
+
+| Key | Value |
+|-----|-------|
+| `DATABASE_URL` | Pooled connection URL dari Neon |
+| `DIRECT_URL` | Direct connection URL dari Neon |
+| `JWT_SECRET` | String random minimal 32 karakter |
+| `ADMIN_EMAIL` | Email untuk login admin |
+| `ADMIN_PASSWORD` | Password admin |
+| `BLOB_READ_WRITE_TOKEN` | (Opsional) Token Vercel Blob untuk upload gambar |
+
+> **JWT_SECRET** bisa dibuat dengan: `openssl rand -base64 32`
+
+---
+
+## Langkah 3 — Setup Vercel Blob (untuk upload gambar)
+
+Tanpa Blob, form admin tetap bisa pakai URL eksternal (paste URL gambar dari internet).
+Untuk upload file langsung dari admin:
+
+1. Vercel Dashboard → **Storage** → **Create Database** → pilih **Blob**
+2. Beri nama → **Create**
+3. Connect ke project portfolio → copy `BLOB_READ_WRITE_TOKEN`
+4. Tambahkan ke Environment Variables Vercel
+
+---
+
+## Langkah 4 — Push schema ke Neon
+
+Jalankan sekali dari lokal setelah set env production:
+
+```powershell
+# Set DATABASE_URL sementara ke Neon URL
+$env:DATABASE_URL="postgresql://USER:PASS@HOST/neondb?sslmode=require"
+$env:DIRECT_URL="postgresql://USER:PASS@HOST/neondb?sslmode=require"
+
+# Push schema (buat semua tabel di Neon)
+npx prisma db push
+
+# Buat akun admin pertama
+npx prisma db seed
+```
+
+Atau pakai file `.env.production.local` (tidak di-commit):
+```env
+DATABASE_URL="postgresql://..."
+DIRECT_URL="postgresql://..."
+JWT_SECRET="..."
+ADMIN_EMAIL="admin@domain.com"
+ADMIN_PASSWORD="password"
+```
+
+Lalu:
+```powershell
+npx dotenv -e .env.production.local -- npx prisma db push
+npx dotenv -e .env.production.local -- npx prisma db seed
+```
+
+---
+
+## Langkah 5 — Deploy
+
+```powershell
+git add .
+git commit -m "migrate to postgresql for vercel"
+git push
+```
+
+Vercel akan otomatis build dan deploy.
+
+---
+
+## Langkah 6 — Verifikasi
+
+1. Buka URL Vercel → pastikan homepage load
+2. Buka `/admin/login` → login dengan `ADMIN_EMAIL` dan `ADMIN_PASSWORD`
+3. Tambah profile, experience, dll dari dashboard admin
+
+---
+
+## Troubleshooting
+
+**Error: `DATABASE_URL` not found**
+→ Pastikan env var sudah di-set di Vercel dan sudah re-deploy setelah set.
+
+**Error: `url must start with protocol file:`**
+→ Nilai `DATABASE_URL` masih format SQLite (`file:./dev.db`). Ganti dengan URL PostgreSQL dari Neon.
+
+**Error: `prepared statement already exists`**
+→ Pastikan `DATABASE_URL` menggunakan URL pooled (dengan `pgbouncer=true`) bukan direct URL.
+
+**Upload gambar tidak berfungsi**
+→ Tanpa `BLOB_READ_WRITE_TOKEN`, upload filesystem tidak tersedia di Vercel. Gunakan URL gambar eksternal atau setup Vercel Blob.
+
+**Data lokal tidak muncul di production**
+→ Database Neon kosong. Jalankan `prisma db seed` dengan `DIRECT_URL` mengarah ke Neon.
+
+---
+
+## Local Development (tetap pakai SQLite)
+
+File `.env` lokal tetap menggunakan:
+```env
+DATABASE_URL="file:./dev.db"
+DIRECT_URL="file:./dev.db"
+```
+
+Prisma otomatis detect SQLite dari prefix `file:` dan PostgreSQL dari prefix `postgresql://`.

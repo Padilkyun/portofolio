@@ -1,18 +1,8 @@
 import { NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import { join } from "path";
 import { requireAdmin } from "@/lib/auth";
 
 const MAX_SIZE_MB = 5;
-const ALLOWED_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/webp",
-  "image/gif",
-  "application/pdf",
-  "application/msword",
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-];
+const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
 
 export async function POST(request: Request) {
   try {
@@ -24,14 +14,12 @@ export async function POST(request: Request) {
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
-
     if (!ALLOWED_TYPES.includes(file.type)) {
       return NextResponse.json(
-        { error: "Only images, PDFs, and Word documents are allowed" },
+        { error: "Only JPG, PNG, WebP, and GIF are allowed" },
         { status: 400 }
       );
     }
-
     if (file.size > MAX_SIZE_MB * 1024 * 1024) {
       return NextResponse.json(
         { error: `File too large. Max ${MAX_SIZE_MB}MB` },
@@ -39,15 +27,26 @@ export async function POST(request: Request) {
       );
     }
 
+    // ── Vercel Blob (production) ──────────────────────────────────────────────
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      const { put } = await import("@vercel/blob");
+      const blob = await put(file.name, file, {
+        access: "public",
+        addRandomSuffix: true,
+      });
+      return NextResponse.json({ url: blob.url }, { status: 201 });
+    }
+
+    // ── Local filesystem (development only) ──────────────────────────────────
+    const { writeFile, mkdir } = await import("fs/promises");
+    const { join } = await import("path");
+
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-
-    // Generate unique filename
     const ext = file.name.split(".").pop() ?? "jpg";
     const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-
-    // Save to public/uploads
     const uploadDir = join(process.cwd(), "public", "uploads");
+
     await mkdir(uploadDir, { recursive: true });
     await writeFile(join(uploadDir, filename), buffer);
 
@@ -56,7 +55,7 @@ export async function POST(request: Request) {
     if (error instanceof Error && error.message === "UNAUTHORIZED") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
-    console.error(error);
+    console.error("[upload]", error);
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }
 }

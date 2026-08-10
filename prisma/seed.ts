@@ -85,6 +85,7 @@ async function main() {
       title: "Early Bullying Detection Embedded System",
       summary: "Edge‑based multi‑sensor system that detects early signs of bullying events and alerts caregivers.",
       description: "An AIoT safety system combining wearable sensing, on‑device classification, and a monitoring dashboard. Privacy-focused by design.",
+      category: "IoT",
       year: 2024,
       featured: true,
       techSolutions: JSON.stringify([
@@ -97,6 +98,7 @@ async function main() {
       title: "Edge Computing for Industrial Sensing (PHR)",
       summary: "Industrial edge stack for low‑latency sensor analytics at Pertamina Hulu Rokan.",
       description: "Deployed edge compute nodes (Jetson Nano) near industrial sensors to run filtering, anomaly detection, and local buffering.",
+      category: "IoT",
       year: 2025,
       featured: true,
       techSolutions: JSON.stringify([
@@ -109,6 +111,7 @@ async function main() {
       title: "Mosquify — IoT GIS for Endemic Prediction",
       summary: "Smart City solution for spatial mapping and early detection of DBD risk.",
       description: "Integrated IoT network (turbidity, TDS, pH, weather) combined with ML classification to predict mosquito breeding potential.",
+      category: "IoT",
       year: 2024,
       featured: true,
       techSolutions: JSON.stringify([
@@ -121,6 +124,7 @@ async function main() {
       title: "PICKME GARUDA — Collaborative Fact-Checker",
       summary: "Next.js & Flutter platform for collaborative news verification and literacy.",
       description: "Award-winning platform (1st Place Hackathon PNP) connecting citizens and government for news validation.",
+      category: "AI",
       year: 2024,
       featured: true,
       techSolutions: JSON.stringify([
@@ -133,6 +137,7 @@ async function main() {
       title: "Smart Waste Tracking & Routing",
       summary: "Dynamic routing and capacity monitoring for urban waste management.",
       description: "Computer vision and ultrasonic sensing to monitor TPS capacity and optimize truck collection routes.",
+      category: "IoT",
       year: 2024,
       techSolutions: JSON.stringify([
         { title: "VRP (Vehicle Routing Problem) Optimizer", description: "Genetic algorithm-based router that calculates optimal paths for waste trucks based on real-time bin levels." },
@@ -144,6 +149,7 @@ async function main() {
       title: "Capsibox — Smart Cold-Chain Box",
       summary: "IoT-enabled smart box for secure and temperature-tracked distribution.",
       description: "Active temperature control and telemetry for high-value agricultural commodities like chili.",
+      category: "IoT",
       year: 2023,
       techSolutions: JSON.stringify([
         { title: "PID Temperature Control", description: "Custom ESP32 firmware using PID logic to drive Peltier cooling/heating elements for <0.5°C stability." },
@@ -155,6 +161,7 @@ async function main() {
       title: "Real-time Sign Language Translator",
       summary: "Deep Learning based hand posture recognition for inclusive communication.",
       description: "MediaPipe and LSTM based system translating Indonesian Sign Language (SIBI) into text/speech.",
+      category: "AI",
       year: 2023,
       techSolutions: JSON.stringify([
         { title: "MediaPipe Landmark Extraction", description: "Real-time extraction of 21 hand landmarks to reduce model input dimensionality and improve robustness." },
@@ -166,6 +173,7 @@ async function main() {
       title: "VR Public Speaking with Biometric Feedback",
       summary: "Immersive VR practice with real-time stress monitoring via GSR and Pulse.",
       description: "A Final Project integrating VR environments with wearable biometric sensors for objective performance analysis.",
+      category: "AI",
       year: 2025,
       featured: true,
       techSolutions: JSON.stringify([
@@ -178,6 +186,7 @@ async function main() {
       title: "Air Quality Analysis & EDA Dashboard",
       summary: "Comprehensive EDA and interactive dashboard for multi-station AQI data.",
       description: "Processing 420k+ rows of environmental data to produce actionable urban quality insights.",
+      category: "Data Science",
       year: 2024,
       techSolutions: JSON.stringify([
         { title: "RFM-based Station Ranking", description: "Novel adaptation of Recency-Frequency-Monetary analysis to rank air pollution severity across stations." },

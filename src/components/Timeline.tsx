@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
-import { formatDateRange, parseJsonArray } from "@/lib/utils";
+import { useRef, useState } from "react";
+import { cn, formatDateRange, parseJsonArray } from "@/lib/utils";
 import { Calendar, MapPin, ExternalLink } from "lucide-react";
 
 export type Experience = {
@@ -263,10 +263,14 @@ function CardInner({
 export function Timeline({
   items,
   type,
+  limit,
 }: {
   items: Experience[] | Bootcamp[];
   type: "work" | "bootcamp";
+  limit?: number;
 }) {
+  const [expanded, setExpanded] = useState(false);
+
   if (!items.length) {
     return (
       <p className="text-sm text-muted">
@@ -275,16 +279,35 @@ export function Timeline({
     );
   }
 
+  const visibleItems =
+    limit != null && !expanded ? items.slice(0, limit) : items;
+  const showToggle = limit != null && items.length > limit;
+
   return (
     <div className="relative">
       {/* Vertical rail — desktop only, behind the dot column */}
       <div className="absolute hidden md:block" style={{ left: "50%", top: 0, bottom: 0, width: 1, background: "var(--border)", transform: "translateX(-50%)" }} />
 
       <div className="space-y-6 md:space-y-0">
-        {items.map((item, i) => (
+        {visibleItems.map((item, i) => (
           <TimelineItem key={item.id} item={item} type={type} index={i} />
         ))}
       </div>
+
+      {showToggle && (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className={cn(
+              "rounded-full border px-5 py-2 text-xs font-medium transition",
+              "border-border bg-white text-muted hover:border-neutral-300 hover:text-foreground"
+            )}
+          >
+            {expanded ? "Show Less" : "View More"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

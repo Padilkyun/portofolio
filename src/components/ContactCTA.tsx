@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { ExportPDFButton } from "@/components/ExportPDFButton";
 
 export function ContactCTA() {
   const ref = useRef<HTMLDivElement>(null);
@@ -68,6 +69,15 @@ export function ContactCTA() {
             >
               Browse projects
             </a>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ delay: 0.55 }}
+            className="mt-5 border-t border-neutral-800 pt-5"
+          >
+            <ExportPDFButton />
           </motion.div>
         </motion.div>
       </div>

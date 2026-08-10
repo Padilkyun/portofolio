@@ -48,6 +48,37 @@ export async function getProjectBySlug(slug: string) {
   });
 }
 
+export async function getExperienceById(id: string) {
+  return prisma.experience.findUnique({
+    where: { id },
+    include: { documentations: { orderBy: { sortOrder: "asc" } } },
+  });
+}
+
+export async function getFullPortfolio() {
+  const [profile, experiences, bootcamps, projects, skills, certificates] = await Promise.all([
+    prisma.profile.findFirst(),
+    prisma.experience.findMany({
+      orderBy: [{ sortOrder: "asc" }, { startDate: "desc" }],
+      include: { documentations: { orderBy: { sortOrder: "asc" } } },
+    }),
+    prisma.bootcamp.findMany({
+      orderBy: [{ sortOrder: "asc" }, { startDate: "desc" }],
+    }),
+    prisma.project.findMany({
+      where: { status: "published" },
+      orderBy: [{ sortOrder: "asc" }, { year: "desc" }],
+      include: {
+        stakeholders: { orderBy: { sortOrder: "asc" } },
+        documentations: { orderBy: { sortOrder: "asc" } },
+      },
+    }),
+    prisma.skill.findMany({ orderBy: [{ category: "asc" }, { sortOrder: "asc" }] }),
+    prisma.certificate.findMany({ orderBy: [{ sortOrder: "asc" }, { issuedAt: "desc" }] }),
+  ]);
+  return { profile, experiences, bootcamps, projects, skills, certificates };
+}
+
 export async function getCertificates() {
   return prisma.certificate.findMany({
     orderBy: [{ sortOrder: "asc" }, { issuedAt: "desc" }],

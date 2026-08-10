@@ -36,18 +36,34 @@ model Profile {
 }
 
 model Experience {
-  id          String    @id @default(cuid())
-  company     String
-  role        String
-  location    String?
-  startDate   DateTime
-  endDate     DateTime?
-  isCurrent   Boolean   @default(false)
-  description String?
-  logoUrl     String?
-  sortOrder   Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id             String                    @id @default(cuid())
+  company        String
+  role           String
+  location       String?
+  startDate      DateTime
+  endDate        DateTime?
+  isCurrent      Boolean                   @default(false)
+  description    String?
+  logoUrl        String?
+  sortOrder      Int                       @default(0)
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+
+  documentations ExperienceDocumentation[]
+}
+
+model ExperienceDocumentation {
+  id           String     @id @default(cuid())
+  experienceId String
+  title        String
+  type         String     @default("link") // link | file | text
+  url          String?
+  content      String?
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  experience Experience @relation(fields: [experienceId], references: [id], onDelete: Cascade)
 }
 
 model Bootcamp {

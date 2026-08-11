@@ -54,15 +54,23 @@ function CertificateTile({ cert }: { cert: Certificate }) {
         {/* Subtle gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-60 transition-opacity duration-500 group-hover/cert:opacity-90" />
 
-        {/* Category badge top-right */}
-        {cert.category && (
-          <span className="absolute right-3 top-3 z-10 inline-flex items-center rounded-full border border-white/30 bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground backdrop-blur-sm">
-            {cert.category}
-         </span>
-        )}
-
         {/* Hover overlay content */}
-        <div className="absolute inset-x-0 bottom-0 z-10 translate-y-3 px-4 pb-4 opacity-0 transition-all duration-500 group-hover/cert:translate-y-0 group-hover/cert:opacity-100">
+        <div className="absolute inset-0 z-10 flex translate-y-3 flex-col justify-end bg-gradient-to-t from-black/85 via-black/25 to-transparent px-4 pb-4 opacity-0 transition-all duration-500 group-hover/cert:translate-y-0 group-hover/cert:opacity-100">
+          <div className="mb-2 flex flex-wrap gap-1.5">
+            {cert.category && (
+              <span className="inline-flex items-center rounded-full border border-white/25 bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground backdrop-blur-sm">
+                {cert.category}
+             </span>
+            )}
+            {cert.issuedAt && (
+              <span className="inline-flex items-center rounded-full border border-white/15 bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm">
+                {new Date(cert.issuedAt).toLocaleDateString("en-US", {
+                  month: "short",
+                  year: "numeric",
+                })}
+             </span>
+            )}
+         </div>
           <p className="line-clamp-2 text-base font-bold leading-tight text-white drop-shadow">
             {cert.title}
          </p>
@@ -81,23 +89,11 @@ function CertificateTile({ cert }: { cert: Certificate }) {
        </div>
      </div>
 
-      {/* Always-visible bottom info */}
-      <div className="px-4 py-3 transition-opacity duration-300 group-hover/cert:opacity-0">
+      {/* Clean default label */}
+      <div className="px-4 py-3">
         <p className="line-clamp-1 text-sm font-semibold text-foreground">
           {cert.title}
        </p>
-        <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted">
-          {cert.issuer && <span className="truncate">{cert.issuer}</span>}
-          {cert.issuer && cert.issuedAt && <span className="opacity-50">·</span>}
-          {cert.issuedAt && (
-            <span className="shrink-0">
-              {new Date(cert.issuedAt).toLocaleDateString("en-US", {
-                month: "short",
-                year: "numeric",
-              })}
-           </span>
-          )}
-       </div>
      </div>
    </a>
   );

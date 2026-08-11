@@ -68,11 +68,19 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
               {project.year && (
                 <span className="badge text-[11px]">{project.year}</span>
               )}
-              {project.category && (
-                <span className="badge text-[11px] bg-neutral-900/5 text-neutral-700">
-                  {project.category}
-                </span>
-              )}
+              {project.category &&
+                project.category.split(",").map((cat, i) => {
+                  const trimmed = cat.trim();
+                  if (!trimmed) return null;
+                  return (
+                    <span
+                      key={i}
+                      className="badge text-[11px] bg-neutral-900/5 text-neutral-700"
+                    >
+                      {trimmed}
+                    </span>
+                  );
+                })}
             </div>
 
             <h3 className="text-base font-semibold tracking-tight transition-colors group-hover:text-neutral-600">
@@ -87,39 +95,46 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
 
             {/* Stakeholders */}
             {project.stakeholders && project.stakeholders.length > 0 && (
-              <div className="mt-4 flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  {project.stakeholders.slice(0, 3).map((s) => (
-                    <div
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {project.stakeholders.slice(0, 3).map((s) => (
+                      <div
+                        key={s.name}
+                        className="relative h-6 w-6 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm"
+                        title={s.name}
+                      >
+                        {s.logoUrl ? (
+                          <Image
+                            src={s.logoUrl}
+                            alt={s.name}
+                            fill
+                            className="object-contain p-0.5"
+                          />
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-neutral-100 text-[8px] font-semibold text-muted">
+                            {s.name.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  {project.stakeholders.length > 3 && (
+                    <span className="text-[11px] text-muted">
+                      +{project.stakeholders.length - 3} more
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {project.stakeholders.map((s) => (
+                    <span
                       key={s.name}
-                      className="relative h-6 w-6 overflow-hidden rounded-full border-2 border-white bg-white shadow-sm"
-                      title={s.name}
+                      className="inline-flex items-center gap-1 rounded-full border border-border bg-surface px-2 py-0.5 text-[10px] font-medium text-muted"
                     >
-                      {s.logoUrl ? (
-                        <Image
-                          src={s.logoUrl}
-                          alt={s.name}
-                          fill
-                          className="object-contain p-0.5"
-                        />
-                      ) : (
-                        <div className="flex h-full w-full items-center justify-center bg-neutral-100 text-[8px] font-semibold text-muted">
-                          {s.name.slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
+                      {s.name}
+                    </span>
                   ))}
                 </div>
-                {project.stakeholders.length > 3 && (
-                  <span className="text-[11px] text-muted">
-                    +{project.stakeholders.length - 3} more
-                  </span>
-                )}
-                {project.stakeholders.length <= 3 && (
-                  <span className="text-[11px] text-muted">
-                    {project.stakeholders.map((s) => s.name).join(", ")}
-                  </span>
-                )}
               </div>
             )}
           </div>

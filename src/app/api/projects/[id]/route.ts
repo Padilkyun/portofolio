@@ -24,6 +24,7 @@ const schema = z.object({
   githubUrl: z.string().optional().nullable(),
   category: z.string().optional().nullable(),
   sortOrder: z.number().int().optional(),
+  skillIds: z.array(z.string()).optional(),
 });
 
 export async function GET(
@@ -37,6 +38,7 @@ export async function GET(
       stakeholders: { orderBy: { sortOrder: "asc" } },
       documentations: { orderBy: { sortOrder: "asc" } },
       visualizations: { orderBy: { sortOrder: "asc" } },
+      skills: { include: { skill: true } },
     },
   });
   if (!item) return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -71,7 +73,21 @@ export async function PUT(
         category: body.category ?? null,
         sortOrder: body.sortOrder ?? 0,
       },
+      include: {
+        skills: { include: { skill: true } },
+      },
     });
+
+    // Sync skills if skillIds provided
+    if (body.skillIds !== undefined) {
+      await prisma.projectSkill.deleteMany({ where: { projectId: id } });
+      if (body.skillIds.length > 0) {
+        await prisma.projectSkill.createMany({
+          data: body.skillIds.map((skillId) => ({ projectId: id, skillId })),
+        });
+      }
+    }
+
     return NextResponse.json(item);
   } catch (error) {
     if (error instanceof Error && error.message === "UNAUTHORIZED") {

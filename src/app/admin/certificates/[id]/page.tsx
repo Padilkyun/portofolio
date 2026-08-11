@@ -24,6 +24,8 @@ export default function EditCertificatePage() {
     imageUrl: "",
     logoUrl: "",
     credentialUrl: "",
+    category: "",
+    type: "certificate" as "certificate" | "achievement",
     sortOrder: 0,
     projectId: "",
   });
@@ -51,11 +53,13 @@ export default function EditCertificatePage() {
           imageUrl: String(item.imageUrl ?? ""),
           logoUrl: String(item.logoUrl ?? ""),
           credentialUrl: String(item.credentialUrl ?? ""),
+          category: String(item.category ?? ""),
+          type: item.type === "achievement" ? "achievement" : "certificate",
           sortOrder: Number(item.sortOrder ?? 0),
           projectId: String(item.projectId ?? ""),
         });
       })
-      .catch(() => setError("Failed to load achievement"))
+      .catch(() => setError("Failed to load entry"))
       .finally(() => setFetching(false));
   }, [id]);
 
@@ -75,6 +79,7 @@ export default function EditCertificatePage() {
           imageUrl: form.imageUrl || null,
           logoUrl: form.logoUrl || null,
           credentialUrl: form.credentialUrl || null,
+          category: form.category || null,
           projectId: form.projectId || null,
         }),
       });
@@ -100,7 +105,7 @@ export default function EditCertificatePage() {
 
   return (
     <FormCard
-      title="Edit achievement"
+      title="Edit certificate or achievement"
       description={form.title || undefined}
       actions={
         <div className="flex gap-2">
@@ -115,16 +120,27 @@ export default function EditCertificatePage() {
       }
     >
       <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
-        <div className="md:col-span-2">
-          <Field label="Achievement title">
-            <input
-              className="input"
-              required
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-            />
-          </Field>
-        </div>
+        <Field label="Type" hint="Certificates go to marquee. Achievements go to popup cards.">
+          <select
+            className="select"
+            value={form.type}
+            onChange={(e) =>
+              setForm({ ...form, type: e.target.value as "certificate" | "achievement" })
+            }
+          >
+            <option value="certificate">Certificate</option>
+            <option value="achievement">Achievement</option>
+          </select>
+        </Field>
+
+        <Field label="Title">
+          <input
+            className="input"
+            required
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+        </Field>
 
         <Field label="Issuer / Provider">
           <input
@@ -132,6 +148,15 @@ export default function EditCertificatePage() {
             placeholder="e.g. Google, Dicoding, Coursera"
             value={form.issuer}
             onChange={(e) => setForm({ ...form, issuer: e.target.value })}
+          />
+        </Field>
+
+        <Field label="Category" hint="e.g. AI, Data Science, IoT, Cloud, Security">
+          <input
+            className="input"
+            placeholder="e.g. AI, Data Science, IoT, Cloud, Security"
+            value={form.category}
+            onChange={(e) => setForm({ ...form, category: e.target.value })}
           />
         </Field>
 

@@ -32,6 +32,7 @@ export async function getProjects(opts?: { featuredOnly?: boolean; includeDraft?
     orderBy: [{ sortOrder: "asc" }, { year: "desc" }, { createdAt: "desc" }],
     include: {
       stakeholders: { orderBy: { sortOrder: "asc" } },
+      skills: { include: { skill: true } },
       _count: { select: { documentations: true, visualizations: true } },
     },
   });
@@ -44,6 +45,7 @@ export async function getProjectBySlug(slug: string) {
       stakeholders: { orderBy: { sortOrder: "asc" } },
       documentations: { orderBy: { sortOrder: "asc" } },
       visualizations: { orderBy: { sortOrder: "asc" } },
+      skills: { include: { skill: true }, orderBy: { skill: { category: "asc" } } },
     },
   });
 }
@@ -71,6 +73,7 @@ export async function getFullPortfolio() {
       include: {
         stakeholders: { orderBy: { sortOrder: "asc" } },
         documentations: { orderBy: { sortOrder: "asc" } },
+        skills: { include: { skill: true } },
       },
     }),
     prisma.skill.findMany({ orderBy: [{ category: "asc" }, { sortOrder: "asc" }] }),
@@ -81,6 +84,17 @@ export async function getFullPortfolio() {
 
 export async function getCertificates() {
   return prisma.certificate.findMany({
+    where: { type: "certificate" },
+    orderBy: [{ sortOrder: "asc" }, { issuedAt: "desc" }],
+    include: {
+      project: { select: { slug: true, title: true, coverImage: true, category: true } },
+    },
+  });
+}
+
+export async function getAchievements() {
+  return prisma.certificate.findMany({
+    where: { type: "achievement" },
     orderBy: [{ sortOrder: "asc" }, { issuedAt: "desc" }],
     include: {
       project: { select: { slug: true, title: true, coverImage: true, category: true } },

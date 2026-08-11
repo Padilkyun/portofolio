@@ -222,14 +222,14 @@ export default async function ProjectDetailPage({
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {project.visualizations.map((viz) => (
-                <figure key={viz.id} className="card overflow-hidden">
-                  <div className="relative aspect-[4/3] bg-surface">
+                <figure key={viz.id} className="card overflow-hidden group/viz">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-surface cursor-zoom-in">
                     {viz.imageUrl ? (
                       <Image
                         src={viz.imageUrl}
                         alt={viz.title}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/viz:scale-[1.15]"
                         sizes="(max-width:768px) 100vw, 33vw"
                       />
                     ) : (
@@ -252,6 +252,27 @@ export default async function ProjectDetailPage({
             </div>
           )}
         </section>
+
+        {/* Skills used in this project */}
+        {project.skills && project.skills.length > 0 && (
+          <section>
+            <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Skills & Technologies
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {project.skills.map((ps) => (
+                <span
+                  key={ps.skill.id}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-neutral-400" />
+                  {ps.skill.name}
+                  <span className="text-[10px] text-muted">({ps.skill.category})</span>
+                </span>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </article>
   );

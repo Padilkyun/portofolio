@@ -1,196 +1,226 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useEffect, useState, useMemo } from "react";
-import { Award, ExternalLink } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Award, ExternalLink, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type CertificateProject = {
+  slug: string;
+  title: string;
+};
 
 type Certificate = {
   id: string;
   title: string;
-  description?: string | null;
   imageUrl?: string | null;
   issuer?: string | null;
   issuedAt?: Date | string | null;
   credentialUrl?: string | null;
+  category?: string | null;
+  project?: CertificateProject | null;
 };
 
-function CertCard({ cert }: { cert: Certificate }) {
+function CertificateTile({ cert }: { cert: Certificate }) {
   return (
-    <div className="group relative mx-3 w-56 shrink-0 overflow-hidden rounded-2xl border border-border bg-neutral-100 shadow-sm transition-all duration-300 hover:shadow-xl md:w-64">
-      {/* Full image — no footer */}
-      <div className="relative aspect-[4/3] w-full bg-white">
+    <a
+      href={cert.credentialUrl || "#"}
+      target={cert.credentialUrl ? "_blank" : undefined}
+      rel={cert.credentialUrl ? "noreferrer" : undefined}
+      className={cn(
+        "group/cert relative block shrink-0 overflow-hidden rounded-2xl border border-neutral-200/70 bg-white shadow-sm transition-all duration-500",
+        "hover:border-neutral-300 hover:shadow-2xl hover:shadow-neutral-200/50",
+        cert.credentialUrl ? "cursor-pointer" : "cursor-default"
+      )}
+      style={{ width: "320px" }}
+    >
+      {/* Image container */}
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-neutral-100 via-neutral-50 to-neutral-100">
         {cert.imageUrl ? (
           <Image
             src={cert.imageUrl}
             alt={cert.title}
             fill
-            className="object-contain transition-transform duration-500 group-hover:scale-[1.04]"
-            sizes="256px"
+            className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/cert:scale-[1.08]"
+            sizes="320px"
             unoptimized
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-neutral-100 to-neutral-200">
-            <Award size={40} className="text-neutral-300" />
-          </div>
+          <div className="flex h-full items-center justify-center">
+            <Award size={48} className="text-neutral-300" />
+         </div>
         )}
 
-        {/* Overlay slides up from bottom on hover */}
-        <div className="absolute inset-0 flex flex-col justify-end bg-gradient-to-t from-neutral-950/95 via-neutral-950/60 to-transparent p-5 translate-y-2 opacity-0 transition-all duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-          <p className="text-sm font-semibold leading-snug text-white">
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-black/0 opacity-60 transition-opacity duration-500 group-hover/cert:opacity-90" />
+
+        {/* Category badge top-right */}
+        {cert.category && (
+          <span className="absolute right-3 top-3 z-10 inline-flex items-center rounded-full border border-white/30 bg-white/95 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-foreground backdrop-blur-sm">
+            {cert.category}
+         </span>
+        )}
+
+        {/* Hover overlay content */}
+        <div className="absolute inset-x-0 bottom-0 z-10 translate-y-3 px-4 pb-4 opacity-0 transition-all duration-500 group-hover/cert:translate-y-0 group-hover/cert:opacity-100">
+          <p className="line-clamp-2 text-base font-bold leading-tight text-white drop-shadow">
             {cert.title}
-          </p>
-          {cert.issuer && (
-            <p className="mt-1 text-[11px] font-medium text-neutral-400">{cert.issuer}</p>
-          )}
+         </p>
+          <div className="mt-1.5 flex items-center justify-between gap-2">
+            {cert.issuer && (
+              <p className="truncate text-xs font-medium text-white/85">
+                {cert.issuer}
+             </p>
+            )}
+            {cert.credentialUrl && (
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-white/95 text-foreground shadow-md transition-transform duration-300 group-hover/cert:scale-110">
+                <ExternalLink size={12} />
+             </span>
+            )}
+         </div>
+       </div>
+     </div>
+
+      {/* Always-visible bottom info */}
+      <div className="px-4 py-3 transition-opacity duration-300 group-hover/cert:opacity-0">
+        <p className="line-clamp-1 text-sm font-semibold text-foreground">
+          {cert.title}
+       </p>
+        <div className="mt-0.5 flex items-center gap-2 text-[11px] text-muted">
+          {cert.issuer && <span className="truncate">{cert.issuer}</span>}
+          {cert.issuer && cert.issuedAt && <span className="opacity-50">·</span>}
           {cert.issuedAt && (
-            <p className="mt-0.5 text-[11px] text-neutral-500">
+            <span className="shrink-0">
               {new Date(cert.issuedAt).toLocaleDateString("en-US", {
                 month: "short",
                 year: "numeric",
               })}
-            </p>
+           </span>
           )}
-          {cert.description && (
-            <p className="mt-2 line-clamp-3 text-xs leading-relaxed text-neutral-300">
-              {cert.description}
-            </p>
-          )}
-          {cert.credentialUrl && (
-            <a
-              href={cert.credentialUrl}
-              target="_blank"
-              rel="noreferrer"
-              onClick={(e) => e.stopPropagation()}
-              className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1.5 text-[11px] font-medium text-white backdrop-blur-sm transition hover:bg-white/20"
-            >
-              <ExternalLink size={10} /> View credential
-            </a>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function MarqueeRow({
-  certs,
-  reverse = false,
-  speed = 35,
-}: {
-  certs: Certificate[];
-  reverse?: boolean;
-  speed?: number;
-}) {
-  const trackRef = useRef<HTMLDivElement>(null);
-  const [duration, setDuration] = useState(speed);
-
-  useEffect(() => {
-    const track = trackRef.current;
-    if (!track) return;
-    const totalWidth = track.scrollWidth / 2;
-    setDuration(totalWidth / speed);
-  }, [certs, speed]);
-
-  const doubled = [...certs, ...certs];
-
-  // Build full animation shorthand to avoid shorthand/longhand React conflict
-  // format: name duration timing-function delay iteration-count direction fill-mode
-  const animationValue = `marquee-scroll ${duration}s linear infinite ${reverse ? "reverse" : "normal"}`;
-
-  return (
-    <div className="relative overflow-hidden">
-      {/* Fade edges */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-white to-transparent" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-white to-transparent" />
-
-      <div
-        ref={trackRef}
-        className="flex w-max py-2"
-        style={{ animation: animationValue, willChange: "transform" }}
-        onMouseEnter={(e) => {
-          (e.currentTarget as HTMLDivElement).style.animationPlayState = "paused";
-        }}
-        onMouseLeave={(e) => {
-          (e.currentTarget as HTMLDivElement).style.animationPlayState = "running";
-        }}
-      >
-        {doubled.map((cert, i) => (
-          <CertCard key={`${cert.id}-${i}`} cert={cert} />
-        ))}
-      </div>
-    </div>
+       </div>
+     </div>
+   </a>
   );
 }
 
 export function CertificateMarquee({ items }: { items: Certificate[] }) {
-  // categories based on issuer (or use category if added later)
+  const [activeFilter, setActiveFilter] = useState<string>("all");
+
   const categories = useMemo(() => {
     const set = new Set<string>();
     items.forEach((c) => {
-      if (c.issuer && c.issuer.trim()) set.add(c.issuer.trim());
+      if (c.category && c.category.trim()) set.add(c.category.trim());
     });
-    return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
+    return ["all", ...Array.from(set).sort()];
   }, [items]);
 
-  const [active, setActive] = useState<string>("all");
-
   const filtered = useMemo(() => {
-    if (active === "all") return items;
-    return items.filter((c) => (c.issuer || "").toLowerCase() === active.toLowerCase());
-  }, [active, items]);
+    if (activeFilter === "all") return items;
+    return items.filter((c) => (c.category || "").toLowerCase() === activeFilter.toLowerCase());
+  }, [items, activeFilter]);
 
   if (!items.length) return null;
 
-  // Always show two rows from filtered, both filled to at least 5 items
-  const fill = (arr: Certificate[]) => {
-    if (arr.length === 0) return [];
-    let out = [...arr];
-    while (out.length < 5) out = [...out, ...arr];
-    return out;
-  };
-
-  const row1 = fill(filtered.filter((_, i) => i % 2 === 0));
-  // If only 1 filtered item, reuse it in row2 so two rows always show
-  const row2 = fill(filtered.length === 1 ? filtered : filtered.filter((_, i) => i % 2 === 1));
+  // Split into two rows for visual rhythm
+  const half = Math.ceil(filtered.length / 2);
+  const row1 = filtered.slice(0, half);
+  const row2 = filtered.slice(half);
+  const row1Doubled = row1.length > 0 ? [...row1, ...row1] : [];
+  const row2Doubled = row2.length > 0 ? [...row2, ...row2] : [];
 
   return (
-    <div className="space-y-4">
-      {/* Category filter buttons */}
-      <div className="flex flex-wrap gap-2">
+    <div className="space-y-6">
+      {/* Filter bar */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-1.5 pr-2 text-xs font-medium text-muted">
+          <Filter size={12} />
+          <span className="uppercase tracking-wider">Filter</span>
+       </div>
         {categories.map((cat) => {
-          const isActive = active === cat;
-          const label = cat === "all" ? "All" : cat;
+          const isActive = activeFilter === cat;
+          const count =
+            cat === "all"
+              ? items.length
+              : items.filter((c) => (c.category || "").toLowerCase() === cat.toLowerCase()).length;
           return (
             <button
               key={cat}
               type="button"
-              onClick={() => setActive(cat)}
-              className={`rounded-full border px-3.5 py-1.5 text-xs font-medium transition ${
+              onClick={() => setActiveFilter(cat)}
+              className={cn(
+                "rounded-full border px-3.5 py-1.5 text-xs font-semibold transition-all duration-200",
                 isActive
-                  ? "border-neutral-900 bg-neutral-900 text-white"
-                  : "border-border bg-white text-muted hover:border-neutral-300 hover:text-foreground"
-              }`}
-            >
-              {label}
-              {cat !== "all" && (
-                <span className="ml-1.5 opacity-60">
-                  {items.filter((c) => (c.issuer || "").toLowerCase() === cat.toLowerCase()).length}
-                </span>
+                  ? "border-neutral-900 bg-neutral-900 text-white shadow-sm"
+                  : "border-neutral-200 bg-white text-foreground/70 hover:border-neutral-300 hover:text-foreground"
               )}
-            </button>
+            >
+              {cat === "all" ? "All" : cat}
+              <span
+                className={cn(
+                  "ml-1.5 opacity-70",
+                  isActive && "text-white/80"
+                )}
+              >
+                {count}
+             </span>
+           </button>
           );
         })}
-      </div>
+        {filtered.length > 0 && (
+          <span className="ml-auto text-xs text-muted">
+            {filtered.length} {filtered.length === 1 ? "certificate" : "certificates"}
+         </span>
+        )}
+     </div>
 
       {filtered.length === 0 ? (
-        <p className="text-sm text-muted">No certificates in this category yet.</p>
+        <div className="rounded-2xl border border-dashed border-neutral-200 bg-white p-10 text-center">
+          <Award size={32} className="mx-auto mb-3 text-neutral-300" />
+          <p className="text-sm text-muted">No certificates in this category yet</p>
+       </div>
       ) : (
         <>
-          <MarqueeRow certs={row1} reverse={false} speed={40} />
-          <MarqueeRow certs={row2} reverse={true} speed={38} />
+          {/* Row 1 — scroll left */}
+          {row1.length > 0 && (
+            <div className="relative overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent" />
+
+              <div
+                className="flex gap-5"
+                style={{
+                  animation: "marquee-scroll-left 50s linear infinite",
+                  width: "max-content",
+                }}
+              >
+                {row1Doubled.map((cert, i) => (
+                  <CertificateTile key={`r1-${cert.id}-${i}`} cert={cert} />
+                ))}
+             </div>
+           </div>
+          )}
+
+          {/* Row 2 — scroll right (opposite direction) */}
+          {row2.length > 0 && (
+            <div className="relative overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-white to-transparent" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-white to-transparent" />
+
+              <div
+                className="flex gap-5"
+                style={{
+                  animation: "marquee-scroll-right 55s linear infinite",
+                  width: "max-content",
+                }}
+              >
+                {row2Doubled.map((cert, i) => (
+                  <CertificateTile key={`r2-${cert.id}-${i}`} cert={cert} />
+                ))}
+             </div>
+           </div>
+          )}
         </>
       )}
-    </div>
+   </div>
   );
 }
-

@@ -1,24 +1,35 @@
 import { AchievementShowcase } from "@/components/AchievementShowcase";
 import { BootcampList } from "@/components/BootcampList";
+import { CertificateMarquee } from "@/components/CertificateMarquee";
 import { ContactCTA } from "@/components/ContactCTA";
 import { ExperienceList } from "@/components/ExperienceList";
 import { FilteredProjects } from "@/components/FilteredProjects";
 import { Hero } from "@/components/Hero";
 import { Section } from "@/components/Section";
 import { SkillsGrid } from "@/components/SkillsGrid";
-import { getBootcamps, getCertificates, getExperiences, getProfile, getProjects, getSkills } from "@/lib/data";
+import {
+  getAchievements,
+  getBootcamps,
+  getCertificates,
+  getExperiences,
+  getProfile,
+  getProjects,
+  getSkills,
+} from "@/lib/data";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [profile, experiences, bootcamps, projects, skills, certificates] = await Promise.all([
-    getProfile(),
-    getExperiences(),
-    getBootcamps(),
-    getProjects(),
-    getSkills(),
-    getCertificates(),
-  ]);
+  const [profile, experiences, bootcamps, projects, skills, certificates, achievements] =
+    await Promise.all([
+      getProfile(),
+      getExperiences(),
+      getBootcamps(),
+      getProjects(),
+      getSkills(),
+      getCertificates(),
+      getAchievements(),
+    ]);
 
   return (
     <>
@@ -31,7 +42,7 @@ export default async function HomePage() {
         className="bg-white"
       >
         <ExperienceList items={experiences} />
-      </Section>
+    </Section>
 
       <Section
         id="bootcamp"
@@ -40,7 +51,7 @@ export default async function HomePage() {
         className="bg-surface"
       >
         <BootcampList items={bootcamps} />
-      </Section>
+    </Section>
 
       <Section
         id="portfolio"
@@ -49,7 +60,7 @@ export default async function HomePage() {
         className="bg-white"
       >
         <FilteredProjects projects={projects} />
-      </Section>
+    </Section>
 
       <Section
         id="skills"
@@ -58,17 +69,28 @@ export default async function HomePage() {
         className="bg-surface"
       >
         <SkillsGrid items={skills} />
-      </Section>
+    </Section>
 
       {certificates.length > 0 && (
         <Section
-          id="achievements"
-          title="Achievements"
-          subtitle="Certifications and milestones tied to real projects."
+          id="certificates"
+          title="Certificates"
+          subtitle="Formal certifications across the stack. Hover to peek, click to verify."
           className="bg-white"
         >
-          <AchievementShowcase items={certificates} />
-        </Section>
+          <CertificateMarquee items={certificates} />
+      </Section>
+      )}
+
+      {achievements.length > 0 && (
+        <Section
+          id="achievements"
+          title="Achievements"
+          subtitle="Awards, milestones, and recognitions tied to real projects."
+          className="bg-surface"
+        >
+          <AchievementShowcase items={achievements} />
+      </Section>
       )}
 
       <ContactCTA />

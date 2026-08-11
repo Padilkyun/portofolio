@@ -106,6 +106,19 @@ model Project {
   documentations  Documentation[]
   visualizations  Visualization[]
   certificates    Certificate[]
+  skills          ProjectSkill[]
+}
+
+model ProjectSkill {
+  id        String   @id @default(cuid())
+  projectId String
+  skillId   String
+  createdAt DateTime @default(now())
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  skill   Skill   @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, skillId])
 }
 
 model Stakeholder {
@@ -159,6 +172,8 @@ model Skill {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  projects ProjectSkill[]
 }
 
 model Certificate {
@@ -171,6 +186,7 @@ model Certificate {
   issuedAt      DateTime?
   credentialUrl String?
   category      String?
+  type          String    @default("certificate") // certificate | achievement
   sortOrder     Int       @default(0)
   projectId     String?
   createdAt     DateTime  @default(now())

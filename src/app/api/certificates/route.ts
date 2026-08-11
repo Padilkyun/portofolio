@@ -12,6 +12,7 @@ const schema = z.object({
   issuedAt: z.string().optional().nullable(),
   credentialUrl: z.string().optional().nullable(),
   category: z.string().optional().nullable(),
+  type: z.enum(["certificate", "achievement"]).optional(),
   sortOrder: z.number().int().optional(),
   projectId: z.string().optional().nullable(),
 });
@@ -27,10 +28,11 @@ export async function POST(request: Request) {
   try {
     await requireAdmin();
     const body = schema.parse(await request.json());
-    const { issuedAt, sortOrder, projectId, ...rest } = body;
+    const { issuedAt, sortOrder, projectId, type, ...rest } = body;
     const item = await prisma.certificate.create({
       data: {
         ...rest,
+        type: type ?? "certificate",
         issuedAt: issuedAt ? new Date(issuedAt) : null,
         sortOrder: sortOrder ?? 0,
         projectId: projectId || null,

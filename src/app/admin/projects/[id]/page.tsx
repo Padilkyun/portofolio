@@ -22,6 +22,16 @@ type Nested = {
   imageUrl?: string | null;
   caption?: string | null;
 };
+type Skill = {
+  id: string;
+  name: string;
+  category: string;
+  level: number;
+};
+type ProjectSkill = {
+  id: string;
+  skill: Skill;
+};
 
 export default function EditProjectPage() {
   const { id } = useParams<{ id: string }>();
@@ -33,6 +43,8 @@ export default function EditProjectPage() {
   const [stakeholders, setStakeholders] = useState<Nested[]>([]);
   const [docs, setDocs] = useState<Nested[]>([]);
   const [viz, setViz] = useState<Nested[]>([]);
+  const [allSkills, setAllSkills] = useState<Skill[]>([]);
+  const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([]);
   const [form, setForm] = useState({
     title: "",
     slug: "",
@@ -77,10 +89,23 @@ export default function EditProjectPage() {
     setStakeholders(data.stakeholders || []);
     setDocs(data.documentations || []);
     setViz(data.visualizations || []);
+    if (data.skills) {
+      const projectSkills = data.skills as ProjectSkill[];
+      setSelectedSkillIds(projectSkills.map((ps) => ps.skill.id));
+    }
+  }
+
+  async function loadSkills() {
+    const res = await fetch("/api/skills");
+    if (res.ok) {
+      const data = await res.json();
+      setAllSkills(data);
+    }
   }
 
   useEffect(() => {
     load();
+    loadSkills();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
@@ -98,6 +123,7 @@ export default function EditProjectPage() {
           year: form.year || null,
           category: form.category || null,
           techSolutions: tech.filter((t) => t.title.trim()),
+          skillIds: selectedSkillIds,
         }),
       });
       if (!res.ok) {
@@ -110,6 +136,12 @@ export default function EditProjectPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function toggleSkill(skillId: string) {
+    setSelectedSkillIds((prev) =>
+      prev.includes(skillId) ? prev.filter((id) => id !== skillId) : [...prev, skillId]
+    );
   }
 
   async function addStakeholder(e: FormEvent) {
@@ -274,6 +306,56 @@ export default function EditProjectPage() {
                 </div>
               ))}
             </div>
+          </div>
+
+          {/* Skills Assignment */}
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold">Assigned skills</h3>
+                <p className="text-xs text-muted">Select skills used in this project.</p>
+              </div>
+              {selectedSkillIds.length > 0 && (
+                <span className="text-xs text-muted">{selectedSkillIds.length} selected</span>
+              )}
+            </div>
+            {allSkills.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted">
+                No skills available. <Link href="/admin/skills" className="underline">Create skills first</Link>.
+              </p>
+            ) : (
+              <div className="space-y-4">
+                {Object.entries(
+                  allSkills.reduce<Record<string, Skill[]>>((acc, s) => {
+                    (acc[s.category] ||= []).push(s);
+                    return acc;
+                  }, {})
+                ).map(([category, skills]) => (
+                  <div key={category}>
+                    <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-muted">{category}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {skills.map((skill) => {
+                        const isSelected = selectedSkillIds.includes(skill.id);
+                        return (
+                          <button
+                            key={skill.id}
+                            type="button"
+                            onClick={() => toggleSkill(skill.id)}
+                            className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                              isSelected
+                                ? "border-neutral-900 bg-neutral-900 text-white"
+                                : "border-border bg-white text-muted hover:border-neutral-300 hover:text-foreground"
+                            }`}
+                          >
+                            {isSelected && "✓ "}{skill.name}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-3">

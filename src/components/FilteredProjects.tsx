@@ -12,7 +12,7 @@ type Project = {
   year?: number | null;
   featured?: boolean;
   category?: string | null;
-  stakeholders?: Array<{ name: string; logoUrl?: string | null }>;
+  stakeholders?: Array<{ id: string; name: string; logoUrl?: string | null }>;
 };
 
 const PROJECT_LIMIT = 6;

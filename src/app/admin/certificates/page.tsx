@@ -15,13 +15,13 @@ export default async function AdminCertificatesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between rounded-2xl border border-border bg-white p-5">
         <div>
-          <h1 className="text-lg font-semibold">Achievements</h1>
+          <h1 className="text-lg font-semibold">Certificates & Achievements</h1>
           <p className="text-sm text-muted">
             {items.length} {items.length === 1 ? "entry" : "entries"}
           </p>
         </div>
         <Link href="/admin/certificates/new" className="btn btn-primary">
-          + Add achievement
+          + Add entry
         </Link>
       </div>
 
@@ -61,6 +61,10 @@ export default async function AdminCertificatesPage() {
 
             {/* Info */}
             <div className="p-4">
+              <div className="mb-2 flex flex-wrap gap-1.5">
+                <span className="badge text-[10px] capitalize">{item.type}</span>
+                {item.category && <span className="badge text-[10px]">{item.category}</span>}
+              </div>
               <p className="truncate font-semibold">{item.title}</p>
               {item.issuer && (
                 <p className="mt-0.5 truncate text-sm text-muted">{item.issuer}</p>

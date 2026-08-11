@@ -22,6 +22,7 @@ export default function NewCertificatePage() {
     logoUrl: "",
     credentialUrl: "",
     category: "",
+    type: "certificate" as "certificate" | "achievement",
     sortOrder: 0,
     projectId: "",
   });
@@ -66,7 +67,7 @@ export default function NewCertificatePage() {
 
   return (
     <FormCard
-      title="New achievement"
+      title="New certificate or achievement"
       actions={
         <Link href="/admin/certificates" className="btn btn-secondary">
           Back
@@ -74,17 +75,28 @@ export default function NewCertificatePage() {
       }
     >
       <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
-        <div className="md:col-span-2">
-          <Field label="Achievement title">
-            <input
-              className="input"
-              required
-              placeholder="e.g. TensorFlow Developer Certificate"
-              value={form.title}
-              onChange={(e) => setForm({ ...form, title: e.target.value })}
-            />
-          </Field>
-        </div>
+        <Field label="Type" hint="Certificates go to marquee. Achievements go to popup cards.">
+          <select
+            className="select"
+            value={form.type}
+            onChange={(e) =>
+              setForm({ ...form, type: e.target.value as "certificate" | "achievement" })
+            }
+          >
+            <option value="certificate">Certificate</option>
+            <option value="achievement">Achievement</option>
+          </select>
+        </Field>
+
+        <Field label="Title">
+          <input
+            className="input"
+            required
+            placeholder="e.g. TensorFlow Developer Certificate"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+          />
+        </Field>
 
         <Field label="Issuer / Provider">
           <input

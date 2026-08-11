@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { DeleteButton } from "@/components/admin/FormControls";
 import { Award, Calendar, ExternalLink } from "lucide-react";
+import { splitLabels } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -63,7 +64,9 @@ export default async function AdminCertificatesPage() {
             <div className="p-4">
               <div className="mb-2 flex flex-wrap gap-1.5">
                 <span className="badge text-[10px] capitalize">{item.type}</span>
-                {item.category && <span className="badge text-[10px]">{item.category}</span>}
+                {splitLabels(item.category).map((label) => (
+                  <span key={label} className="badge text-[10px]">{label}</span>
+                ))}
               </div>
               <p className="truncate font-semibold">{item.title}</p>
               {item.issuer && (

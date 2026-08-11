@@ -11,6 +11,7 @@ import {
   Trophy,
   X,
 } from "lucide-react";
+import { splitLabels } from "@/lib/utils";
 
 type AchievementProject = {
   slug: string;
@@ -91,11 +92,14 @@ function AchievementCard({
 
           <div className="flex-1 min-w-0">
             <div className="mb-1.5 flex flex-wrap items-center gap-2">
-              {achievement.category && (
-                <span className="inline-flex items-center rounded-full bg-neutral-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">
-                  {achievement.category}
+              {splitLabels(achievement.category).map((label) => (
+                <span
+                  key={label}
+                  className="inline-flex items-center rounded-full bg-neutral-900 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white"
+                >
+                  {label}
                </span>
-              )}
+              ))}
               {issuedDate && (
                 <span className="inline-flex items-center gap-1 text-[11px] font-medium text-muted">
                   <Calendar size={10} />
@@ -238,11 +242,14 @@ function AchievementModal({
               <div className="space-y-6 p-7 md:p-9">
                 {/* Meta */}
                 <div className="flex flex-wrap items-center gap-2">
-                  {achievement.category && (
-                    <span className="inline-flex items-center rounded-full bg-neutral-900 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white">
-                      {achievement.category}
+                  {splitLabels(achievement.category).map((label) => (
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-full bg-neutral-900 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-white"
+                    >
+                      {label}
                    </span>
-                  )}
+                  ))}
                   {achievement.issuedAt && (
                     <span className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 bg-neutral-50 px-3 py-1 text-[11px] font-medium text-muted">
                       <Calendar size={11} />
@@ -298,10 +305,14 @@ function AchievementModal({
                       <p className="mt-0.5 truncate font-semibold text-foreground">
                         {achievement.project.title}
                      </p>
-                      {achievement.project.category && (
-                        <p className="mt-0.5 text-xs text-muted">
-                          {achievement.project.category}
-                       </p>
+                      {splitLabels(achievement.project.category).length > 0 && (
+                        <div className="mt-1 flex flex-wrap gap-1.5">
+                          {splitLabels(achievement.project.category).map((label) => (
+                            <span key={label} className="badge text-[10px]">
+                              {label}
+                           </span>
+                          ))}
+                       </div>
                       )}
                    </div>
                     <ArrowRight

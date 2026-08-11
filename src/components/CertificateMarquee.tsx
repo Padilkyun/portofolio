@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { Award, ExternalLink, Filter } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, splitLabels } from "@/lib/utils";
 
 type CertificateProject = {
   slug: string;
@@ -57,11 +57,14 @@ function CertificateTile({ cert }: { cert: Certificate }) {
         {/* Hover overlay content */}
         <div className="absolute inset-0 z-10 flex translate-y-3 flex-col justify-end bg-gradient-to-t from-black/85 via-black/25 to-transparent px-4 pb-4 opacity-0 transition-all duration-500 group-hover/cert:translate-y-0 group-hover/cert:opacity-100">
           <div className="mb-2 flex flex-wrap gap-1.5">
-            {cert.category && (
-              <span className="inline-flex items-center rounded-full border border-white/25 bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground backdrop-blur-sm">
-                {cert.category}
+            {splitLabels(cert.category).map((label) => (
+              <span
+                key={label}
+                className="inline-flex items-center rounded-full border border-white/25 bg-white/90 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-foreground backdrop-blur-sm"
+              >
+                {label}
              </span>
-            )}
+            ))}
             {cert.issuedAt && (
               <span className="inline-flex items-center rounded-full border border-white/15 bg-white/15 px-2.5 py-0.5 text-[10px] font-semibold text-white backdrop-blur-sm">
                 {new Date(cert.issuedAt).toLocaleDateString("en-US", {
@@ -105,14 +108,16 @@ export function CertificateMarquee({ items }: { items: Certificate[] }) {
   const categories = useMemo(() => {
     const set = new Set<string>();
     items.forEach((c) => {
-      if (c.category && c.category.trim()) set.add(c.category.trim());
+      splitLabels(c.category).forEach((label) => set.add(label));
     });
-    return ["all", ...Array.from(set).sort()];
+    return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [items]);
 
   const filtered = useMemo(() => {
     if (activeFilter === "all") return items;
-    return items.filter((c) => (c.category || "").toLowerCase() === activeFilter.toLowerCase());
+    return items.filter((c) =>
+      splitLabels(c.category).some((label) => label.toLowerCase() === activeFilter.toLowerCase())
+    );
   }, [items, activeFilter]);
 
   if (!items.length) return null;
@@ -137,7 +142,9 @@ export function CertificateMarquee({ items }: { items: Certificate[] }) {
           const count =
             cat === "all"
               ? items.length
-              : items.filter((c) => (c.category || "").toLowerCase() === cat.toLowerCase()).length;
+              : items.filter((c) =>
+                  splitLabels(c.category).some((label) => label.toLowerCase() === cat.toLowerCase())
+                ).length;
           return (
             <button
               key={cat}

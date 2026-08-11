@@ -21,6 +21,13 @@ export function parseJsonArray<T = string>(value: string | null | undefined, fal
   }
 }
 
+export function splitLabels(value?: string | null) {
+  return (value || "")
+    .split(",")
+    .map((label) => label.trim())
+    .filter(Boolean);
+}
+
 export function formatDateRange(start?: Date | string | null, end?: Date | string | null, isCurrent = false) {
   const fmt = (d: Date | string) => {
     const date = typeof d === "string" ? new Date(d) : d;

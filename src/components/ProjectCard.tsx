@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
+import { splitLabels } from "@/lib/utils";
 
 type Project = {
   slug: string;
@@ -68,19 +69,14 @@ export function ProjectCard({ project, index = 0 }: { project: Project; index?: 
               {project.year && (
                 <span className="badge text-[11px]">{project.year}</span>
               )}
-              {project.category &&
-                project.category.split(",").map((cat, i) => {
-                  const trimmed = cat.trim();
-                  if (!trimmed) return null;
-                  return (
-                    <span
-                      key={i}
-                      className="badge text-[11px] bg-neutral-900/5 text-neutral-700"
-                    >
-                      {trimmed}
-                    </span>
-                  );
-                })}
+              {splitLabels(project.category).map((cat) => (
+                <span
+                  key={cat}
+                  className="badge text-[11px] bg-neutral-900/5 text-neutral-700"
+                >
+                  {cat}
+                </span>
+              ))}
             </div>
 
             <h3 className="text-base font-semibold tracking-tight transition-colors group-hover:text-neutral-600">

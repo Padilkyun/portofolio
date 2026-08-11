@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ProjectCard } from "@/components/ProjectCard";
-import { cn } from "@/lib/utils";
+import { cn, splitLabels } from "@/lib/utils";
 
 type Project = {
   slug: string;
@@ -21,7 +21,7 @@ export function FilteredProjects({ projects }: { projects: Project[] }) {
   const categories = useMemo(() => {
     const set = new Set<string>();
     projects.forEach((p) => {
-      if (p.category && p.category.trim()) set.add(p.category.trim());
+      splitLabels(p.category).forEach((label) => set.add(label));
     });
     return ["all", ...Array.from(set).sort((a, b) => a.localeCompare(b))];
   }, [projects]);
@@ -31,7 +31,9 @@ export function FilteredProjects({ projects }: { projects: Project[] }) {
 
   const filtered = useMemo(() => {
     if (active === "all") return projects;
-    return projects.filter((p) => (p.category || "").toLowerCase() === active.toLowerCase());
+    return projects.filter((p) =>
+      splitLabels(p.category).some((label) => label.toLowerCase() === active.toLowerCase())
+    );
   }, [active, projects]);
 
   const visible = expanded ? filtered : filtered.slice(0, PROJECT_LIMIT);
@@ -90,7 +92,9 @@ export function FilteredProjects({ projects }: { projects: Project[] }) {
               {label}
               {cat !== "all" && (
                 <span className="ml-1.5 opacity-60">
-                  {projects.filter((p) => (p.category || "").toLowerCase() === cat.toLowerCase()).length}
+                  {projects.filter((p) =>
+                    splitLabels(p.category).some((label) => label.toLowerCase() === cat.toLowerCase())
+                  ).length}
                 </span>
               )}
             </button>

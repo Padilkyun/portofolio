@@ -19,6 +19,7 @@ export default function NewCertificatePage() {
     issuedAt: "",
     description: "",
     imageUrl: "",
+    logoUrl: "",
     credentialUrl: "",
     category: "",
     sortOrder: 0,
@@ -46,6 +47,7 @@ export default function NewCertificatePage() {
           issuer: form.issuer || null,
           description: form.description || null,
           imageUrl: form.imageUrl || null,
+          logoUrl: form.logoUrl || null,
           credentialUrl: form.credentialUrl || null,
           projectId: form.projectId || null,
         }),
@@ -64,7 +66,7 @@ export default function NewCertificatePage() {
 
   return (
     <FormCard
-      title="New certificate"
+      title="New achievement"
       actions={
         <Link href="/admin/certificates" className="btn btn-secondary">
           Back
@@ -73,7 +75,7 @@ export default function NewCertificatePage() {
     >
       <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
-          <Field label="Certificate title">
+          <Field label="Achievement title">
             <input
               className="input"
               required
@@ -128,6 +130,16 @@ export default function NewCertificatePage() {
 
         <div className="md:col-span-2">
           <ImageUpload
+            label="Issuer logo"
+            value={form.logoUrl}
+            onChange={(url) => setForm({ ...form, logoUrl: url })}
+            aspect="square"
+            hint="Upload the issuer/organization logo (square recommended)"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <ImageUpload
             label="Certificate image"
             value={form.imageUrl}
             onChange={(url) => setForm({ ...form, imageUrl: url })}
@@ -148,7 +160,7 @@ export default function NewCertificatePage() {
         </div>
 
         <div className="md:col-span-2">
-          <Field label="Description" hint="Brief summary of what this certificate covers">
+          <Field label="Description" hint="Brief summary of what this achievement covers">
             <textarea
               className="textarea"
               rows={3}

@@ -15,13 +15,13 @@ export default async function AdminCertificatesPage() {
     <div className="space-y-4">
       <div className="flex items-center justify-between rounded-2xl border border-border bg-white p-5">
         <div>
-          <h1 className="text-lg font-semibold">Certificates</h1>
+          <h1 className="text-lg font-semibold">Achievements</h1>
           <p className="text-sm text-muted">
             {items.length} {items.length === 1 ? "entry" : "entries"}
           </p>
         </div>
         <Link href="/admin/certificates/new" className="btn btn-primary">
-          + Add certificate
+          + Add achievement
         </Link>
       </div>
 
@@ -43,6 +43,18 @@ export default async function AdminCertificatesPage() {
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
                   <Award size={32} className="text-neutral-300" />
+                </div>
+              )}
+              {/* Logo badge overlay */}
+              {item.logoUrl && (
+                <div className="absolute bottom-2 left-2 flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl border border-white/80 bg-white shadow-md">
+                  <Image
+                    src={item.logoUrl}
+                    alt={item.issuer || item.title}
+                    width={32}
+                    height={32}
+                    className="object-contain p-1"
+                  />
                 </div>
               )}
             </div>
@@ -98,9 +110,9 @@ export default async function AdminCertificatesPage() {
       {items.length === 0 && (
         <div className="rounded-2xl border border-dashed border-border bg-white p-10 text-center">
           <Award size={32} className="mx-auto mb-3 text-neutral-300" />
-          <p className="text-sm text-muted">No certificates yet.</p>
+          <p className="text-sm text-muted">No achievements yet.</p>
           <Link href="/admin/certificates/new" className="btn btn-primary mt-4">
-            Add your first certificate
+            Add your first achievement
           </Link>
         </div>
       )}

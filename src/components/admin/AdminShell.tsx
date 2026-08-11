@@ -22,7 +22,7 @@ const nav = [
   { href: "/admin/bootcamps", label: "Bootcamp", icon: GraduationCap },
   { href: "/admin/projects", label: "Projects", icon: FolderKanban },
   { href: "/admin/skills", label: "Skills", icon: Sparkles },
-  { href: "/admin/certificates", label: "Certificates", icon: Award },
+  { href: "/admin/certificates", label: "Achievements", icon: Award },
 ];
 
 export function AdminShell({

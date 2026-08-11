@@ -22,6 +22,7 @@ export default function EditCertificatePage() {
     issuedAt: "",
     description: "",
     imageUrl: "",
+    logoUrl: "",
     credentialUrl: "",
     sortOrder: 0,
     projectId: "",
@@ -48,12 +49,13 @@ export default function EditCertificatePage() {
           issuedAt: toDateInputValue(item.issuedAt as string | null),
           description: String(item.description ?? ""),
           imageUrl: String(item.imageUrl ?? ""),
+          logoUrl: String(item.logoUrl ?? ""),
           credentialUrl: String(item.credentialUrl ?? ""),
           sortOrder: Number(item.sortOrder ?? 0),
           projectId: String(item.projectId ?? ""),
         });
       })
-      .catch(() => setError("Failed to load certificate"))
+      .catch(() => setError("Failed to load achievement"))
       .finally(() => setFetching(false));
   }, [id]);
 
@@ -71,6 +73,7 @@ export default function EditCertificatePage() {
           issuer: form.issuer || null,
           description: form.description || null,
           imageUrl: form.imageUrl || null,
+          logoUrl: form.logoUrl || null,
           credentialUrl: form.credentialUrl || null,
           projectId: form.projectId || null,
         }),
@@ -97,7 +100,7 @@ export default function EditCertificatePage() {
 
   return (
     <FormCard
-      title="Edit certificate"
+      title="Edit achievement"
       description={form.title || undefined}
       actions={
         <div className="flex gap-2">
@@ -113,7 +116,7 @@ export default function EditCertificatePage() {
     >
       <form onSubmit={onSubmit} className="grid gap-4 md:grid-cols-2">
         <div className="md:col-span-2">
-          <Field label="Certificate title">
+          <Field label="Achievement title">
             <input
               className="input"
               required
@@ -158,6 +161,16 @@ export default function EditCertificatePage() {
 
         <div className="md:col-span-2">
           <ImageUpload
+            label="Issuer logo"
+            value={form.logoUrl}
+            onChange={(url) => setForm({ ...form, logoUrl: url })}
+            aspect="square"
+            hint="Upload the issuer/organization logo (square recommended)"
+          />
+        </div>
+
+        <div className="md:col-span-2">
+          <ImageUpload
             label="Certificate image"
             value={form.imageUrl}
             onChange={(url) => setForm({ ...form, imageUrl: url })}
@@ -178,7 +191,7 @@ export default function EditCertificatePage() {
         </div>
 
         <div className="md:col-span-2">
-          <Field label="Description" hint="Brief summary of what this certificate covers">
+          <Field label="Description" hint="Brief summary of what this achievement covers">
             <textarea
               className="textarea"
               rows={3}

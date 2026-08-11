@@ -162,18 +162,19 @@ model Skill {
 }
 
 model Certificate {
-  id          String   @id @default(cuid())
-  title       String
-  description String?
-  imageUrl    String?
-  issuer      String?
-  issuedAt    DateTime?
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  imageUrl      String?
+  logoUrl       String?
+  issuer        String?
+  issuedAt      DateTime?
   credentialUrl String?
-  category    String?
-  sortOrder   Int      @default(0)
-  projectId   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  category      String?
+  sortOrder     Int       @default(0)
+  projectId     String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
-  project     Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  project       Project?  @relation(fields: [projectId], references: [id], onDelete: SetNull)
 }

@@ -7,6 +7,7 @@ const schema = z.object({
   title: z.string().min(1),
   description: z.string().optional().nullable(),
   imageUrl: z.string().optional().nullable(),
+  logoUrl: z.string().optional().nullable(),
   issuer: z.string().optional().nullable(),
   issuedAt: z.string().optional().nullable(),
   credentialUrl: z.string().optional().nullable(),

@@ -23,7 +23,7 @@ export default async function AdminDashboard() {
     { label: "Experiences", value: experiences, href: "/admin/experiences" },
     { label: "Bootcamps", value: bootcamps, href: "/admin/bootcamps" },
     { label: "Skills", value: skills, href: "/admin/skills" },
-    { label: "Certificates", value: certificates, href: "/admin/certificates" },
+    { label: "Achievements", value: certificates, href: "/admin/certificates" },
   ];
 
   return (
@@ -60,7 +60,7 @@ export default async function AdminDashboard() {
             Add bootcamp
           </Link>
           <Link href="/admin/certificates/new" className="btn btn-secondary">
-            Add certificate
+            Add achievement
           </Link>
         </div>
       </div>

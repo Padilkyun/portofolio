@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ExternalLink, FileText, Github } from "lucide-react";
+import { VisualizationGallery } from "@/components/VisualizationGallery";
 import { getProjectBySlug, hydrateProject } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -214,43 +215,15 @@ export default async function ProjectDetailPage({
 
         {/* Visualizations */}
         <section>
-          <p className="mb-4 text-xs font-medium uppercase tracking-[0.18em] text-muted">
-            Visualizations
-          </p>
-          {project.visualizations.length === 0 ? (
-            <p className="text-sm text-muted">No visualization cards yet.</p>
-          ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {project.visualizations.map((viz) => (
-                <figure key={viz.id} className="card overflow-hidden group/viz">
-                  <div className="relative aspect-[4/3] overflow-hidden bg-surface cursor-zoom-in">
-                    {viz.imageUrl ? (
-                      <Image
-                        src={viz.imageUrl}
-                        alt={viz.title}
-                        fill
-                        className="object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/viz:scale-[1.15]"
-                        sizes="(max-width:768px) 100vw, 33vw"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-sm text-muted">
-                        No image
-                      </div>
-                    )}
-                  </div>
-                  <figcaption className="p-4">
-                    <h3 className="font-medium">{viz.title}</h3>
-                    {viz.description && (
-                      <p className="mt-1 text-sm text-muted">{viz.description}</p>
-                    )}
-                    {viz.caption && (
-                      <p className="mt-2 text-xs italic text-neutral-400">{viz.caption}</p>
-                    )}
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
-          )}
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-muted">
+              Visualizations
+            </p>
+            {project.visualizations.length > 0 && (
+              <p className="text-xs text-muted">Click image to open full preview</p>
+            )}
+          </div>
+          <VisualizationGallery items={project.visualizations} />
         </section>
 
         {/* Skills used in this project */}

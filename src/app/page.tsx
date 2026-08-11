@@ -1,5 +1,5 @@
+import { AchievementShowcase } from "@/components/AchievementShowcase";
 import { BootcampList } from "@/components/BootcampList";
-import { CertificateMarquee } from "@/components/CertificateMarquee";
 import { ContactCTA } from "@/components/ContactCTA";
 import { ExperienceList } from "@/components/ExperienceList";
 import { FilteredProjects } from "@/components/FilteredProjects";
@@ -62,12 +62,12 @@ export default async function HomePage() {
 
       {certificates.length > 0 && (
         <Section
-          id="certificates"
-          title="Certificates"
-          subtitle="Credentials earned across AI, IoT, and engineering programs."
+          id="achievements"
+          title="Achievements"
+          subtitle="Certifications and milestones tied to real projects."
           className="bg-white"
         >
-          <CertificateMarquee items={certificates} />
+          <AchievementShowcase items={certificates} />
         </Section>
       )}
 

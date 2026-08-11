@@ -82,6 +82,9 @@ export async function getFullPortfolio() {
 export async function getCertificates() {
   return prisma.certificate.findMany({
     orderBy: [{ sortOrder: "asc" }, { issuedAt: "desc" }],
+    include: {
+      project: { select: { slug: true, title: true, coverImage: true, category: true } },
+    },
   });
 }
 

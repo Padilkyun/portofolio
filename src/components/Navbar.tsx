@@ -13,7 +13,7 @@ const links = [
   { href: "/#bootcamp", label: "Bootcamp" },
   { href: "/#portfolio", label: "Portfolio" },
   { href: "/#skills", label: "Skills" },
-  { href: "/#certificates", label: "Certificates" },
+  { href: "/#achievements", label: "Achievements" },
   { href: "/contact", label: "Contact" },
 ];
 

@@ -1,15 +1,18 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Field, FormCard, SubmitButton } from "@/components/admin/FormControls";
 import { ImageUpload } from "@/components/admin/ImageUpload";
 
+type ProjectOption = { id: string; title: string };
+
 export default function NewCertificatePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [projects, setProjects] = useState<ProjectOption[]>([]);
   const [form, setForm] = useState({
     title: "",
     issuer: "",
@@ -19,7 +22,15 @@ export default function NewCertificatePage() {
     credentialUrl: "",
     category: "",
     sortOrder: 0,
+    projectId: "",
   });
+
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((r) => r.json())
+      .then((data: ProjectOption[]) => setProjects(data))
+      .catch(() => {});
+  }, []);
 
   async function onSubmit(e: FormEvent) {
     e.preventDefault();
@@ -36,6 +47,7 @@ export default function NewCertificatePage() {
           description: form.description || null,
           imageUrl: form.imageUrl || null,
           credentialUrl: form.credentialUrl || null,
+          projectId: form.projectId || null,
         }),
       });
       if (!res.ok) {
@@ -99,6 +111,21 @@ export default function NewCertificatePage() {
           />
         </Field>
 
+        <Field label="Linked project" hint="Optional — associates this achievement with a project">
+          <select
+            className="select"
+            value={form.projectId}
+            onChange={(e) => setForm({ ...form, projectId: e.target.value })}
+          >
+            <option value="">None</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+        </Field>
+
         <div className="md:col-span-2">
           <ImageUpload
             label="Certificate image"
@@ -132,7 +159,7 @@ export default function NewCertificatePage() {
           </Field>
         </div>
 
-        <Field label="Sort order" hint="Lower = appears first in marquee">
+        <Field label="Sort order" hint="Lower = appears first">
           <input
             className="input"
             type="number"

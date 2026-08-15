@@ -423,12 +423,20 @@ export default function EditProjectPage() {
       {/* Visualizations */}
       <div className="rounded-2xl border border-border bg-white p-5">
         <h2 className="text-lg font-semibold">Visualizations</h2>
-        <form onSubmit={addViz} className="mt-4 grid gap-3 md:grid-cols-2">
+        <form onSubmit={addViz} className="mt-4 space-y-4">
           <input className="input" placeholder="Title" required value={vizForm.title} onChange={(e) => setVizForm({ ...vizForm, title: e.target.value })} />
-          <input className="input" placeholder="Image URL" value={vizForm.imageUrl} onChange={(e) => setVizForm({ ...vizForm, imageUrl: e.target.value })} />
+          <div>
+            <ImageUpload
+              label="Image"
+              value={vizForm.imageUrl}
+              onChange={(url) => setVizForm({ ...vizForm, imageUrl: url })}
+              aspect="landscape"
+              hint="Upload or paste image URL"
+            />
+          </div>
           <input className="input" placeholder="Description" value={vizForm.description} onChange={(e) => setVizForm({ ...vizForm, description: e.target.value })} />
           <input className="input" placeholder="Caption" value={vizForm.caption} onChange={(e) => setVizForm({ ...vizForm, caption: e.target.value })} />
-          <button type="submit" className="btn btn-primary md:col-span-2">
+          <button type="submit" className="btn btn-primary w-full">
             Add visualization
           </button>
         </form>
